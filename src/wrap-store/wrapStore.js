@@ -94,7 +94,7 @@ export default (store, {
   * Setup for state updates
   */
   const connectState = (port) => {
-    if (port.name !== portName) {
+    if (!portName.includes(port.name)) {
       return;
     }
 
