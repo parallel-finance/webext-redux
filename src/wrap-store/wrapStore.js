@@ -46,13 +46,13 @@ const defaultOpts = {
  * @param {Object} options An object of form {portName, dispatchResponder, serializer, deserializer}, where `portName` is a required string and defines the name of the port for state transition changes, `dispatchResponder` is a function that takes the result of a store dispatch and optionally implements custom logic for responding to the original dispatch message,`serializer` is a function to serialize outgoing message payloads (default is passthrough), `deserializer` is a function to deserialize incoming message payloads (default is passthrough), and diffStrategy is one of the included diffing strategies (default is shallow diff) or a custom diffing function.
  */
 export default (store, {
-  portName = defaultOpts.portName,
+  portName = [defaultOpts.portName],
   dispatchResponder = defaultOpts.dispatchResponder,
   serializer = defaultOpts.serializer,
   deserializer = defaultOpts.deserializer,
   diffStrategy = defaultOpts.diffStrategy
 } = defaultOpts) => {
-  if (!portName) {
+  if (!portName.length) {
     throw new Error('portName is required in options');
   }
   if (typeof serializer !== 'function') {
@@ -71,7 +71,7 @@ export default (store, {
    * Respond to dispatches from UI components
    */
   const dispatchResponse = (request, sender, sendResponse) => {
-    if (request.type === DISPATCH_TYPE && request.portName === portName) {
+    if (request.type === DISPATCH_TYPE && portName.includes(request.portName)) {
       const action = Object.assign({}, request.payload, {
         _sender: sender
       });
