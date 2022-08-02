@@ -130,7 +130,7 @@ export default (store, {
   };
 
   const withPayloadDeserializer = withDeserializer(deserializer);
-  const shouldDeserialize = (request) => request.type === DISPATCH_TYPE && request.portName === portName;
+  const shouldDeserialize = (request) => request.type === DISPATCH_TYPE && portName.includes(request.portName);
 
   /**
    * Setup action handler
@@ -165,12 +165,15 @@ export default (store, {
    */
   browserAPI.tabs.query({}, tabs => {
     for(const tab of tabs){
-      browserAPI.tabs.sendMessage(tab.id, {action: 'storeReady', portName}, () => {
-        if (chrome.runtime.lastError) {
-          // do nothing - errors can be present
-          // if no content script exists on reciever
-        }
-      });
+      for (const p of portName) {
+        browserAPI.tabs.sendMessage(tab.id, {action: 'storeReady', p}, () => {
+          if (chrome.runtime.lastError) {
+            // do nothing - errors can be present
+            // if no content script exists on reciever
+          }
+        });
+
+      }
     }
   });
 
